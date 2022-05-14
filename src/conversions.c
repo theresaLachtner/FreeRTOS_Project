@@ -1,5 +1,5 @@
-#include "lib/common.h"
-#include "lib/conversions.h"
+#include "../lib/common.h"
+#include "../lib/conversions.h"
 
 //converts raw value from ADC to voltage
 float Convert_toVoltage(uint16_t raw)

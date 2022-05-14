@@ -1,5 +1,5 @@
-#include "lib/common.h"
-#include "lib/debug.h"
+#include "../lib/common.h"
+#include "../lib/debug.h"
 
 //initialize UART
 void UART_init(uint32_t baudrate)
