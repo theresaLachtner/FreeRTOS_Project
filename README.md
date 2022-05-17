@@ -1,2 +1,2 @@
-#README FreeRTOS Project
+#README Atomthreads Project
 
