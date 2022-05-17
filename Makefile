@@ -13,6 +13,8 @@ BAUD  = 9600UL
 ##  need to change this path to match.
 LIBDIR = lib
 SRCDIR = src
+FREERTOSDIR = FreeRTOS-Kernel
+FREERTOSINC = FreeRTOS-Kernel/include
 
 ##########------------------------------------------------------##########
 ##########                 Programmer Defaults                  ##########
@@ -52,7 +54,7 @@ TARGET = $(lastword $(subst /, ,$(CURDIR)))
 # Object files: will find all .c/.h files in current directory
 #  and in LIBDIR.  If you have any other (sub-)directories with code,
 #  you can add them in to SOURCES below in the wildcard statement.
-SOURCES=$(wildcard *.c $(SRCDIR)/*.c)
+SOURCES=$(wildcard *.c $(SRCDIR)/*.c $(FREERTOSDIR)/*.c $(FREERTOSINC)/*.c)
 OBJECTS=$(SOURCES:.c=.o)
 HEADERS=$(SOURCES:.c=.h)
 
@@ -119,7 +121,7 @@ clean:
 	$(TARGET).eeprom
 
 squeaky_clean:
-	rm -f *.elf *.hex *.obj *.o *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom
+	rm -f *.elf *.hex *.obj *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom *.o $(SRCDIR)/*.o
 
 ##########------------------------------------------------------##########
 ##########              Programmer-specific details             ##########
