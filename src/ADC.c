@@ -1,5 +1,5 @@
-#include "lib/common.h"
-#include "lib/ADC.h"
+#include "../lib/common.h"
+#include "../lib/ADC.h"
 
 //set voltage reference, prescaler and activate ADC
 void ADC_init()

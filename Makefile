@@ -12,6 +12,7 @@ BAUD  = 9600UL
 ## If you move either the current folder or the Library folder, you'll 
 ##  need to change this path to match.
 LIBDIR = lib
+SRCDIR = src
 
 ##########------------------------------------------------------##########
 ##########                 Programmer Defaults                  ##########
@@ -51,7 +52,7 @@ TARGET = $(lastword $(subst /, ,$(CURDIR)))
 # Object files: will find all .c/.h files in current directory
 #  and in LIBDIR.  If you have any other (sub-)directories with code,
 #  you can add them in to SOURCES below in the wildcard statement.
-SOURCES=$(wildcard *.c $(LIBDIR)/*.c)
+SOURCES=$(wildcard *.c $(SRCDIR)/*.c)
 OBJECTS=$(SOURCES:.c=.o)
 HEADERS=$(SOURCES:.c=.h)
 
@@ -118,7 +119,7 @@ clean:
 	$(TARGET).eeprom
 
 squeaky_clean:
-	rm -f *.elf *.hex *.obj *.o *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom
+	rm -f *.elf *.hex *.obj *.o *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom $(SRCDIR)/*.o
 
 ##########------------------------------------------------------##########
 ##########              Programmer-specific details             ##########

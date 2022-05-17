@@ -1,5 +1,5 @@
-#include "lib/common.h"
-#include "lib/PWM.h"
+#include "../lib/common.h"
+#include "../lib/PWM.h"
 
 extern uint16_t _POT_value;
 

@@ -1,8 +1,8 @@
-#include "lib/common.h"
-#include "lib/ADC.h"
-#include "lib/dimmer.h"
-#include "lib/PWM.h"
-#include "lib/conversions.h"
+#include "../lib/common.h"
+#include "../lib/ADC.h"
+#include "../lib/dimmer.h"
+#include "../lib/PWM.h"
+#include "../lib/conversions.h"
 
 //ADC-converted value of potentiometer - global variable
 extern uint16_t _POT_value;

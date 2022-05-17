@@ -1,5 +1,5 @@
-#include "lib/common.h"
-#include "lib/GPIO.h"
+#include "../lib/common.h"
+#include "../lib/GPIO.h"
 
 void GPIO_setOutput(volatile uint8_t *DDRx, uint8_t pos)
 {

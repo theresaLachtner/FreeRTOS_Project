@@ -1,8 +1,8 @@
-#include "lib/setup.h"
-#include "lib/common.h"
-#include "lib/GPIO.h"
-#include "lib/ADC.h"
-#include "lib/PWM.h"
+#include "../lib/setup.h"
+#include "../lib/common.h"
+#include "../lib/GPIO.h"
+#include "../lib/ADC.h"
+#include "../lib/PWM.h"
 
 void setup()
 {
