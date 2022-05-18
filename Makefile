@@ -121,7 +121,7 @@ clean:
 	$(TARGET).eeprom
 
 squeaky_clean:
-	rm -f *.elf *.hex *.obj *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom *.o $(SRCDIR)/*.o
+	rm -f *.elf *.hex *.obj *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom *.o $(SRCDIR)/*.o $(FREERTOSDIR)/*.o $(FREERTOSINC)/*.o
 
 ##########------------------------------------------------------##########
 ##########              Programmer-specific details             ##########

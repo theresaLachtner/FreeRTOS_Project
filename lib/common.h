@@ -4,7 +4,11 @@
 #define DEBUG
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
+
+#include "../FreeRTOS-Kernel/include/FreeRTOS.h"
+#include "../FreeRTOS-Kernel/include/task.h"
 
 //only included in debug-mode
 #ifdef DEBUG
@@ -16,6 +20,8 @@
 uint16_t _POT_value;
 //ADC-converted value of light dependant resistor
 uint16_t _LDR_value;
+
+TaskHandle_t exampleTaskHandle;
 
 //ADC channel of potentiometer
 #define POT_CHANNEL 0
