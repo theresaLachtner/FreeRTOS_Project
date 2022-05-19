@@ -1,7 +1,8 @@
 #include "../lib/common.h"
 #include "../lib/ADC.h"
 
-extern TaskHandle_t exampleTaskHandle;
+// handle for the channel info queue
+extern QueueHandle_t _QH_channelInfo;
 
 //set voltage reference, prescaler and activate ADC
 void ADC_init()
@@ -24,6 +25,12 @@ uint16_t ADC_read(uint16_t channel)
 	//start conversion
 	ADCSRA |= (1 << ADSC);
 	
-	vTaskSuspend(exampleTaskHandle);
+	// send current channel to queue
+	QueueMessage_t channelInfo = {channel};
+	xQueueSend(_QH_channelInfo, &channelInfo, (TickType_t) 10);
+	// wait for notification from ISR
+	xTaskNotifyWait(0, 0, NULL, (TickType_t)100);
+
+	//return the raw converted value
 	return ADCW;
 }

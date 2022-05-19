@@ -12,7 +12,7 @@
 	#define configTOTAL_HEAP_SIZE		( (size_t ) ( 1200 ) )
 	#define configMAX_PRIORITIES		( 4 )
 	#define configMAX_TASK_NAME_LEN		( 8 )
-	#define configUSE_PREEMPTION		1
+	#define configUSE_PREEMPTION		0
 	#define configUSE_IDLE_HOOK			1
 	#define configUSE_TICK_HOOK			0
 	#define configCPU_CLOCK_HZ			16000000

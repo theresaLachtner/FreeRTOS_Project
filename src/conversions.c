@@ -38,3 +38,24 @@ uint8_t Convert_toPWM(float voltage, int16_t* pwm_val)
         return 1;
     }
 }
+
+//converts 10 bit ADC input to 8 bits to conform with PWM register size
+void Convert_to8Bit(uint16_t *adc_val)
+{
+    *adc_val = (*adc_val) * (255.0 / 1023.0);
+}
+
+//adjust ldr value between 0 and 255
+void Adjust_LDR_(uint16_t *ldr)
+{
+    *ldr -= 25;//LDR_LOWER_LIMIT;
+    *ldr = (*ldr) * (255.0 /(214.0-25.0));//(LDR_UPPER_LIMIT - LDR_LOWER_LIMIT);
+    if (*ldr < 0)
+    {
+        *ldr = 0;
+    }
+    else if (*ldr > 255)
+    {
+        *ldr = 255;
+    }
+}
