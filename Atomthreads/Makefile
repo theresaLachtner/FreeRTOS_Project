@@ -13,6 +13,7 @@ BAUD  = 9600UL
 ##  need to change this path to match.
 LIBDIR = lib
 SRCDIR = src
+ATHDIR = kernel
 
 ##########------------------------------------------------------##########
 ##########                 Programmer Defaults                  ##########
@@ -52,8 +53,9 @@ TARGET = $(lastword $(subst /, ,$(CURDIR)))
 # Object files: will find all .c/.h files in current directory
 #  and in LIBDIR.  If you have any other (sub-)directories with code,
 #  you can add them in to SOURCES below in the wildcard statement.
-SOURCES=$(wildcard *.c $(SRCDIR)/*.c)
+SOURCES=$(wildcard *.c $(SRCDIR)/*.c $(ATHDIR)/*.c)
 OBJECTS=$(SOURCES:.c=.o)
+ASM_OBJ=atomport-asm.o
 HEADERS=$(SOURCES:.c=.h)
 
 ## Compilation options, type man avr-gcc if you're curious.
@@ -77,7 +79,7 @@ TARGET_ARCH = -mmcu=$(MCU)
 %.o: %.c $(HEADERS) Makefile
 	 $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<;
 
-$(TARGET).elf: $(OBJECTS)
+$(TARGET).elf: $(OBJECTS) $(ATHDIR)/asm/$(ASM_OBJ)
 	$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LDLIBS) -o $@
 
 %.hex: %.elf
@@ -85,6 +87,9 @@ $(TARGET).elf: $(OBJECTS)
 
 %.eeprom: %.elf
 	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O ihex $< $@ 
+
+#$(ASM_OBJ): %.o: $(ATHDIR)/%.s
+#	 $(CC) -c -g $(TARGET_ARCH) -Wall -Werror -x assembler-with-cpp -I. -I$(ATHDIR) $< -o $(ATHDIR)/$(notdir $@)
 
 %.lst: %.elf
 	$(OBJDUMP) -S $< > $@
@@ -119,7 +124,7 @@ clean:
 	$(TARGET).eeprom
 
 squeaky_clean:
-	rm -f *.elf *.hex *.obj *.o *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom $(SRCDIR)/*.o
+	rm -f *.elf *.hex *.obj *.o *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom $(SRCDIR)/*.o $(ATHDIR)/*.o
 
 ##########------------------------------------------------------##########
 ##########              Programmer-specific details             ##########
