@@ -2,4 +2,4 @@
 void ADC_init();
 
 //read single value from ADC-channel
-uint16_t ADC_read(uint16_t channel);
+uint16_t ADC_read(uint8_t channel);

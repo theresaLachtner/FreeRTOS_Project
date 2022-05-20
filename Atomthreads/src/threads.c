@@ -10,9 +10,15 @@
 // ADC-converted value of potentiometer
 static uint16_t _POT_value = 0;
 // ADC-converted value of LDR
-static uint16_t _LDR_value = 0;;
+static uint16_t _LDR_value = 0;
+
 // mutex for handling ADC values
 extern ATOM_MUTEX _MUTEX_ADC;
+// mutex for handling LDR value
+extern ATOM_MUTEX _MUTEX_LDR;
+// mutex for handling POT value
+extern ATOM_MUTEX _MUTEX_POT;
+
 // queue for signaling a change in the ADC values to the PWM
 extern ATOM_QUEUE _QUEUE_ADCchange;
 
@@ -26,8 +32,7 @@ void THREAD_getPotentiometerValue(uint32_t param)
     // message that signals a change
     uint8_t changeMSG = 1;
     // activate interrupt for ADC ready interrupt
-    //ADCSRA |= (1 << ADIE);
-    char str[10];
+    ADCSRA |= (1 << ADIE);
     while (1)
     {
         // take the ADC mutex
@@ -36,23 +41,21 @@ void THREAD_getPotentiometerValue(uint32_t param)
             // read the currrent value from the ADC channel
             new_POT_value = ADC_read(POT_CHANNEL);
 
-            sprintf(str, "%d", new_POT_value);
-            UART_sendstring(str);
-            UART_sendstring("\n\n");
-
             // give back the mutex
             atomMutexPut(&_MUTEX_ADC);
+
             // convert to PWM conform value
             Convert_to8Bit(&new_POT_value);
             // if change occured, signal the PWM thread
 
-
-            
-
             if (new_POT_value != _POT_value)
             {
+                atomMutexGet(&_MUTEX_POT, 15);
+                //write new value to global variable
                 _POT_value = new_POT_value;
-                //atomQueuePut(&_QUEUE_ADCchange, 10, &changeMSG);
+                atomMutexPut(&_MUTEX_POT);
+
+                atomQueuePut(&_QUEUE_ADCchange, 10, &changeMSG);
             }
         }
     }
@@ -75,22 +78,24 @@ void THREAD_getLDRValue(uint32_t param)
         if (atomMutexGet(&_MUTEX_ADC, 10) == ATOM_OK)
         {
             // read the currrent value from the ADC channel
-            new_LDR_value = ADC_read(POT_CHANNEL);
+            new_LDR_value = ADC_read(LDR_CHANNEL);
+
             // give back the mutex
             atomMutexPut(&_MUTEX_ADC);
+
             // convert to PWM conform value
             Convert_to8Bit(&new_LDR_value);
             // adjust to value between 0 and 255
             Adjust_LDR(&new_LDR_value);
 
-            sprintf(str, "%d", new_LDR_value);
-            UART_sendstring(str);
-            UART_sendstring("\n");
-
             // if change occured, signal the PWM thread
             if (new_LDR_value != _LDR_value)
             {
+                atomMutexGet(&_MUTEX_LDR, 15);
+                //write new value to global variable
                 _LDR_value = new_LDR_value;
+                atomMutexPut(&_MUTEX_LDR);
+
                 atomQueuePut(&_QUEUE_ADCchange, 10, &changeMSG);
             }
         }
@@ -107,10 +112,35 @@ void THREAD_setPWM(uint32_t param)
     {
         if (atomQueueGet(&_QUEUE_ADCchange, 100, &msg) == ATOM_OK)
         {
-            atomMutexGet(&_MUTEX_ADC, 30);
-            
-            PWM_adjust(_POT_value - _LDR_value);
-            atomMutexPut(&_MUTEX_ADC);
+            switch (msg)
+            {
+                // in case the message is received from POT thread lock POT mutex first
+                case 1:
+                    if (atomMutexGet(&_MUTEX_POT, 10) == ATOM_OK)
+                    {
+                        if (atomMutexGet(&_MUTEX_LDR, 10) == ATOM_OK)
+                        {
+                            PWM_adjust(_POT_value - _LDR_value);
+                            atomMutexPut(&_MUTEX_LDR);
+                        }
+                        atomMutexPut(&_MUTEX_POT);
+                    }
+                    break;
+                // in case the message is received from POT thread lock POT mutex first
+                case 2:
+                    if (atomMutexGet(&_MUTEX_LDR, 10) == ATOM_OK)
+                    {
+                        if (atomMutexGet(&_MUTEX_POT, 10) == ATOM_OK)
+                        {
+                            PWM_adjust(_POT_value - _LDR_value);
+                            atomMutexPut(&_MUTEX_POT);
+                        }
+                        atomMutexPut(&_MUTEX_LDR);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

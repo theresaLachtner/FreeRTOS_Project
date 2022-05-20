@@ -18,10 +18,20 @@
 #include "debug.h"
 #endif
 
+
+// mutex for handling LDR value
+ATOM_MUTEX _MUTEX_LDR;
+// mutex for handling POT value
+ATOM_MUTEX _MUTEX_POT;
 // mutex for handling the ADC values
 ATOM_MUTEX _MUTEX_ADC;
+
 // queue for signaling a change in the ADC values to the PWM
 ATOM_QUEUE _QUEUE_ADCchange;
+// queue for sending data ready bit to ADC read
+ATOM_QUEUE _QUEUE_fromInterrupt;
+
+
 
 // ADC channel of potentiometer
 #define POT_CHANNEL 0

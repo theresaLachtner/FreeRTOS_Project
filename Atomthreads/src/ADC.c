@@ -1,6 +1,11 @@
 #include "../lib/common.h"
 #include "../lib/ADC.h"
 
+// queue for sending current ADC channel to interrupt
+extern ATOM_QUEUE _QUEUE_toInterrupt;
+// queue for sending data ready bit to ADC read
+extern ATOM_QUEUE _QUEUE_fromInterrupt;
+
 //set voltage reference, prescaler and activate ADC
 void ADC_init()
 {
@@ -13,7 +18,7 @@ void ADC_init()
 }
 
 //read single value from ADC-channel
-uint16_t ADC_read(uint16_t channel)
+uint16_t ADC_read(uint8_t channel)
 {
 	//clear channel register
 	ADMUX &= ~(0x1F);
@@ -22,14 +27,8 @@ uint16_t ADC_read(uint16_t channel)
 	//start conversion
 	ADCSRA |= (1 << ADSC);
 	
-//TODO - realize without polling
-	
-	//poll for completion
-	while (ADCSRA & (1 << ADSC))
-	{
-		//wait
-	}
+	uint8_t msg;
+	atomQueueGet(&_QUEUE_fromInterrupt, 10000, &msg);
+
 	return ADCW;
-	
-//END TODO
 }
