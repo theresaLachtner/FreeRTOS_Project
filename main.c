@@ -20,49 +20,32 @@ extern TaskHandle_t _TH_setPWM;
 extern xSemaphoreHandle _MUTEX_ADC;
 // current ADC-channel - global variable
 extern uint16_t _ADC_channel;
-// handle for the channel info queue
-extern QueueHandle_t _QH_channelInfo;
+// handle for the ADC ready queue
+extern QueueHandle_t _QH_ADCready;
 
 ISR(ADC_vect)
 {
 	// stores the recieved info from queue
-	QueueMessage_t channelInfo;
-	BaseType_t taskWokenByReceive = pdFALSE;
-	if (xQueueReceiveFromISR(_QH_channelInfo, &channelInfo, &taskWokenByReceive) == pdTRUE)
-	{
-		// check, wich task is to be resumed according to channelInfo message
-		switch (channelInfo.q_channel)
-		{
-			case POT_CHANNEL:
-				UART_sendstring("1");
-				// resume potentiometer task
-				xTaskNotifyFromISR(_TH_getPOTval, 0, (eNotifyAction)eNoAction, NULL);
-				break;
-			case LDR_CHANNEL:
-				UART_sendstring("2");
-				// resume LDR task
-				xTaskNotifyFromISR(_TH_getLDRval, 0, (eNotifyAction)eNoAction, NULL);
-				break;
-			default:
-				break;
-		}
-	}
+	QueueMessage_t ADCready = 1;
+	// send adc ready message to queue
+	xQueueSend(_QH_ADCready, &ADCready, (TickType_t) 10);
 	// yield remaining slice time
 	portYIELD();
 }
-
-extern uint16_t _POT_value;
-extern uint16_t _LDR_value;
 
 int main()
 {
 	// set up GPIO, ADC, initial PWM (and debugging)
 	setup();
 
-	// create mutex for uninterrupted ADC conversion
+	// create mutexes
 	_MUTEX_ADC = xSemaphoreCreateMutex();
-	// create message queue for transmitting current ADC channel
-	_QH_channelInfo = xQueueCreate(2, sizeof(QueueMessage_t*));  
+	_MUTEX_POT = xSemaphoreCreateMutex();
+	_MUTEX_LDR = xSemaphoreCreateMutex();
+
+	// create message queue
+	_QH_ADCready = xQueueCreate(2, sizeof(QueueMessage_t*));  
+
 
 	// create the tasks
 	xTaskCreate(&TASK_setPWM, (portCHAR *)"PWM", configMINIMAL_STACK_SIZE, NULL, 4, &_TH_setPWM);

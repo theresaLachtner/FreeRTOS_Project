@@ -22,30 +22,28 @@
 // GLOBAL VARIABLE DECLARATION
 //------------------------------------------------------------------------
 
-// ADC-converted value of potentiometer
-uint16_t _POT_value;
-// ADC-converted value of light dependant resistor
-uint16_t _LDR_value;
 // task handle for get potentiometer value
 TaskHandle_t _TH_getPOTval;
 // task handle for get LDR value
 TaskHandle_t _TH_getLDRval;
 // handle for the pwm task
 TaskHandle_t _TH_setPWM;
+
 // handle for the ADC mutex semaphore
 xSemaphoreHandle _MUTEX_ADC;
+// handle for the POT value
+xSemaphoreHandle _MUTEX_POT;
+// handle for the LDR value
+xSemaphoreHandle _MUTEX_LDR;
+
 // handle for the channel info queue
-QueueHandle_t _QH_channelInfo;
+QueueHandle_t _QH_ADCready;
 
 //------------------------------------------------------------------------
 // PRIVATE TYPEDEF
 //------------------------------------------------------------------------
 
-typedef struct
-{
-    uint16_t q_channel;
-}QueueMessage_t;
-
+typedef uint16_t QueueMessage_t;
 
 //------------------------------------------------------------------------
 // PRIVATE MAKROS

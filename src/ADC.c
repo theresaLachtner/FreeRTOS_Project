@@ -2,7 +2,7 @@
 #include "../lib/ADC.h"
 
 // handle for the channel info queue
-extern QueueHandle_t _QH_channelInfo;
+extern QueueHandle_t _QH_ADCready;
 
 //set voltage reference, prescaler and activate ADC
 void ADC_init()
@@ -26,10 +26,8 @@ uint16_t ADC_read(uint16_t channel)
 	ADCSRA |= (1 << ADSC);
 	
 	// send current channel to queue
-	QueueMessage_t channelInfo = {channel};
-	xQueueSend(_QH_channelInfo, &channelInfo, (TickType_t) 10);
-	// wait for notification from ISR
-	xTaskNotifyWait(0, 0, NULL, (TickType_t)100);
+	QueueMessage_t channelInfo = 0;
+	xQueueReceive(_QH_ADCready, &channelInfo, (TickType_t)10000);
 
 	//return the raw converted value
 	return ADCW;
