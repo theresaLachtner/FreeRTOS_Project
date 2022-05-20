@@ -9,26 +9,28 @@
 #include "../kernel/atom.h"
 #include "../kernel/atomport-private.h"
 #include "../kernel/atomtimer.h"
+#include "../kernel/atommutex.h"
+#include "../kernel/atomqueue.h"
 
-//only included in debug-mode
+// only included in debug-mode
 #ifdef DEBUG
 #include <stdio.h>
 #include "debug.h"
 #endif
 
-//ADC-converted value of potentiometer
-uint16_t _POT_value;
-//ADC-converted value of light dependant resistor
-uint16_t _LDR_value;
+// mutex for handling the ADC values
+ATOM_MUTEX _MUTEX_ADC;
+// queue for signaling a change in the ADC values to the PWM
+ATOM_QUEUE _QUEUE_ADCchange;
 
-//ADC channel of potentiometer
+// ADC channel of potentiometer
 #define POT_CHANNEL 0
-//ADC channel of light dependent resistor
+// ADC channel of light dependent resistor
 #define LDR_CHANNEL 1
 
-//upper voltage limit of the LDR
+// upper voltage limit of the LDR
 #define LDR_UPPER_LIMIT 4.2
-//lower voltage limit of the LDR
+// lower voltage limit of the LDR
 #define LDR_LOWER_LIMIT 0.5
 
 #define REGISTER_SIZE 256
