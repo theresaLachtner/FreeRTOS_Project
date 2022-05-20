@@ -6,6 +6,10 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "../kernel/atom.h"
+#include "../kernel/atomport-private.h"
+#include "../kernel/atomtimer.h"
+
 //only included in debug-mode
 #ifdef DEBUG
 #include <stdio.h>

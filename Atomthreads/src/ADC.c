@@ -10,18 +10,6 @@ void ADC_init()
 	ADMUX = (1 << REFS0);
 	//set the prescaler to 128 
 	ADCSRA |= (1 << ADPS0)|(1 << ADPS1)|(1 << ADPS2);
-#ifdef DEBUG
-	char debug_str[100];
-	sprintf(debug_str, "%x", ADCSRA);
-	UART_sendstring("ADCSRA: ");
-	UART_sendstring(debug_str);
-	UART_sendstring("\n");
-
-	sprintf(debug_str, "%x", ADMUX);
-	UART_sendstring("ADMUX: ");
-	UART_sendstring(debug_str);
-	UART_sendstring("\n");
-#endif
 }
 
 //read single value from ADC-channel
